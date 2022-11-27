@@ -43,11 +43,7 @@ fn main() {
             let i = x / CELL_SIZE;
             let j = y / CELL_SIZE;
 
-            *cell = match automaton.get_cell(i, j) {
-                0 => 0xFFFFFF,
-                1 => 0,
-                _ => 0
-            };
+            *cell = automaton.get_cell_color(i, j);
         }
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
     }

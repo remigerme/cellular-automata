@@ -1,11 +1,13 @@
-use crate::automaton::{Automaton, Rules};
+use crate::automaton::{Automaton, Rules, Draw};
 
 pub struct GameOfLifeAutomaton(Automaton);
 
 
 impl GameOfLifeAutomaton {
     pub fn new(m: usize, n: usize, cells: Vec<Vec<u32>>) -> Self {
-        GameOfLifeAutomaton(Automaton::new(m, n, 2, cells))
+        let q = 2;
+        let colors = vec![0xFFFFFF, 0];
+        GameOfLifeAutomaton(Automaton::new(m, n, q, colors, cells))
     }
 
     pub fn get_size(&self) -> (usize, usize) {
@@ -26,6 +28,10 @@ impl GameOfLifeAutomaton {
 
     pub fn init_rand(&mut self) {
         self.0.init_rand();
+    }
+
+    pub fn get_cell_color(&self, i: usize, j: usize) -> u32 {
+        self.0.get_cell_color(i, j)
     }
 }
 
