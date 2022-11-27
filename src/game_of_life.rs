@@ -1,4 +1,4 @@
-use crate::automaton::{Automaton, Rules, Draw};
+use crate::automaton::{Automaton, Access, Init, Rules};
 
 pub struct GameOfLifeAutomaton(Automaton);
 
@@ -8,30 +8,6 @@ impl GameOfLifeAutomaton {
         let q = 2;
         let colors = vec![0xFFFFFF, 0];
         GameOfLifeAutomaton(Automaton::new(m, n, q, colors, cells))
-    }
-
-    pub fn get_size(&self) -> (usize, usize) {
-        (self.0.m, self.0.n)
-    }
-
-    pub fn get_cell(&self, i: usize, j: usize) -> u32 {
-        self.0.cells[i][j]
-    }
-
-    pub fn get_cells(&self) -> Vec<Vec<u32>> {
-        self.0.cells.clone()
-    }
-
-    pub fn init_state(&mut self, s: u32) {
-        self.0.init_state(s);
-    }
-
-    pub fn init_rand(&mut self) {
-        self.0.init_rand();
-    }
-
-    pub fn get_cell_color(&self, i: usize, j: usize) -> u32 {
-        self.0.get_cell_color(i, j)
     }
 }
 
@@ -55,5 +31,36 @@ impl Rules for GameOfLifeAutomaton {
             }
         }
         self.0.swap_buffer();
+    }
+}
+
+
+// The end of the file is used to delegate functions
+impl Access for GameOfLifeAutomaton {
+    fn get_size(&self) -> (usize, usize) {
+        self.0.get_size()
+    }
+
+    fn get_cells(&self) -> Vec<Vec<u32>> {
+        self.0.get_cells()
+    }
+
+    fn get_cell(&self, i: usize, j: usize) -> u32 {
+        self.0.get_cell(i, j)
+    }
+
+    fn get_cell_color(&self, i: usize, j: usize) -> u32 {
+        self.0.get_cell_color(i, j)
+    }
+}
+
+
+impl Init for GameOfLifeAutomaton {
+    fn init_rand(&mut self) {
+        self.0.init_rand()
+    }
+
+    fn init_state(&mut self, s: u32) {
+        self.0.init_state(s)
     }
 }
