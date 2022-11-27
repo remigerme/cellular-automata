@@ -7,6 +7,7 @@ pub struct Automaton {
     pub m: usize,
     pub n: usize,
     pub q: u32,
+    colors: Vec<u32>,
     pub cells: Vec<Vec<u32>>,
     pub temp: Vec<Vec<u32>>,
 }
@@ -17,6 +18,12 @@ pub trait Rules {
     fn next(&mut self);
 }
 
+
+pub trait Draw {
+    fn get_cell_color(&self, i: usize, j: usize) -> u32;
+}
+
+
 pub trait Init {
     fn init_state(&mut self, s: u32);
     fn init_rand(&mut self);
@@ -24,11 +31,12 @@ pub trait Init {
 
 
 impl Automaton {
-    pub fn new(m: usize, n: usize, q:u32, cells: Vec<Vec<u32>>) -> Self {
+    pub fn new(m: usize, n: usize, q:u32, colors: Vec<u32>, cells: Vec<Vec<u32>>) -> Self {
         Automaton {
             m,
             n,
             q,
+            colors,
             cells: cells.clone(),
             temp: cells
         }
@@ -69,5 +77,11 @@ impl Automaton {
             self.cells[i+1][j+1],
         ];
         neighbours
+    }
+}
+
+impl Draw for Automaton {
+    fn get_cell_color(&self, i: usize, j: usize) -> u32 {
+        self.colors[self.cells[i][j] as usize]
     }
 }
