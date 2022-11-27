@@ -2,9 +2,12 @@ use std::vec::Vec;
 use minifb::{Key, Window, WindowOptions};
 
 mod automaton;
-use crate::automaton::Rules;
 mod game_of_life;
+mod wildfire;
+
+use crate::automaton::{Access, Rules, Init};
 use crate::game_of_life::GameOfLifeAutomaton;
+use crate::wildfire::WildfireAutomaton;
 
 const M: usize = 80;
 const N: usize = 120;
@@ -30,7 +33,7 @@ fn main() {
     window.limit_update_rate(Some(std::time::Duration::from_micros(16600)));
 
     let cells = vec![vec![0u32; WIDTH]; HEIGHT];
-    let mut automaton = GameOfLifeAutomaton::new(M, N, cells);
+    let mut automaton = WildfireAutomaton::new(M, N, cells);
     automaton.init_rand();
 
     while window.is_open() && !window.is_key_down(Key::Escape) {
