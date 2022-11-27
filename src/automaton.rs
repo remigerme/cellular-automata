@@ -13,13 +13,10 @@ pub struct Automaton {
 }
 
 
-pub trait Rules {
-    fn next_state(&self, i: usize, j: usize) -> u32;
-    fn next(&mut self);
-}
-
-
-pub trait Draw {
+pub trait Access {
+    fn get_size(&self) -> (usize, usize);
+    fn get_cells(&self) -> Vec<Vec<u32>>;
+    fn get_cell(&self, i: usize, j: usize) -> u32;
     fn get_cell_color(&self, i: usize, j: usize) -> u32;
 }
 
@@ -27,6 +24,12 @@ pub trait Draw {
 pub trait Init {
     fn init_state(&mut self, s: u32);
     fn init_rand(&mut self);
+}
+
+
+pub trait Rules {
+    fn next_state(&self, i: usize, j: usize) -> u32;
+    fn next(&mut self);
 }
 
 
@@ -39,25 +42,6 @@ impl Automaton {
             colors,
             cells: cells.clone(),
             temp: cells
-        }
-    }
-
-    pub fn init_state(&mut self, s: u32) {
-        for i in 1..self.m - 1 {
-            for j in 1..self.n - 1 {
-                self.cells[i][j] = s;
-                self.temp[i][j] = s;
-            }
-        }
-    }
-
-    pub fn init_rand(&mut self) {
-        for i in 1..self.m - 1 {
-            for j in 1..self.n - 1 {
-                let s = rand::thread_rng().gen_range(0..self.q);
-                self.cells[i][j] = s;
-                self.temp[i][j] = s;
-            }
         }
     }
 
@@ -80,8 +64,43 @@ impl Automaton {
     }
 }
 
-impl Draw for Automaton {
+
+impl Access for Automaton {
+    fn get_size(&self) -> (usize, usize) {
+       (self.m, self.n) 
+    }
+
+    fn get_cells(&self) -> Vec<Vec<u32>> {
+        self.cells.clone()
+    }
+
+    fn get_cell(&self, i: usize, j: usize) -> u32 {
+        self.cells[i][j]
+    }
+
     fn get_cell_color(&self, i: usize, j: usize) -> u32 {
         self.colors[self.cells[i][j] as usize]
+    }
+}
+
+
+impl Init for Automaton {
+    fn init_state(&mut self, s: u32) {
+        for i in 1..self.m - 1 {
+            for j in 1..self.n - 1 {
+                self.cells[i][j] = s;
+                self.temp[i][j] = s;
+            }
+        }
+    }
+
+    fn init_rand(&mut self) {
+        for i in 1..self.m - 1 {
+            for j in 1..self.n - 1 {
+                let s = rand::thread_rng().gen_range(0..self.q);
+                self.cells[i][j] = s;
+                self.temp[i][j] = s;
+            }
+        }
     }
 }
