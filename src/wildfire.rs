@@ -22,10 +22,10 @@ pub struct WildfireAutomaton(Automaton);
 
 
 impl WildfireAutomaton {
-    pub fn new(m: usize, n: usize, cells: Vec<Vec<u32>>) -> Self {
+    pub fn new(m: usize, n: usize, torus: bool, cells: Vec<Vec<u32>>) -> Self {
         let q = 7;
         let colors = vec![GREY, BLACK, GREEN, DARK_GREEN, YELLOW, ORANGE, RED];
-        WildfireAutomaton(Automaton::new(m, n, q, colors, cells))
+        WildfireAutomaton(Automaton::new(m, n, q, torus, colors, cells))
     }
 }
 
@@ -72,8 +72,10 @@ impl Rules for WildfireAutomaton {
     }
 
     fn next(&mut self) {
-        for i in 1..self.0.m - 1 {
-            for j in 1..self.0.n - 1 {
+        let (i_min, i_max) = if self.0.torus {(0, self.0.m)} else {(1, self.0.m - 1)};
+        let (j_min, j_max) = if self.0.torus {(0, self.0.n)} else {(1, self.0.n - 1)};
+        for i in i_min..i_max {
+            for j in j_min..j_max {
                 self.0.temp[i][j] = self.next_state(i, j);
             }
         }
