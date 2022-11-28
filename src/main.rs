@@ -4,15 +4,17 @@ use minifb::{Key, Window, WindowOptions};
 mod automaton;
 mod game_of_life;
 mod wildfire;
+mod color_gradient;
 
 use crate::automaton::{Access, Rules, Init};
 use crate::game_of_life::GameOfLifeAutomaton;
 use crate::wildfire::WildfireAutomaton;
+use crate::color_gradient::ColorGradientAutomaton;
 
-const M: usize = 80;
-const N: usize = 120;
+const M: usize = 400;
+const N: usize = 600;
 
-const CELL_SIZE: usize = 10;
+const CELL_SIZE: usize = 2;
 
 const WIDTH: usize = N * CELL_SIZE;
 const HEIGHT: usize = M * CELL_SIZE;
@@ -30,10 +32,10 @@ fn main() {
     .unwrap_or_else(|e| {
         panic!("{}", e);
     });
-    window.limit_update_rate(Some(std::time::Duration::from_micros(16600)));
+    window.limit_update_rate(Some(std::time::Duration::from_micros(3 * 16600)));
 
     let cells = vec![vec![0u32; WIDTH]; HEIGHT];
-    let mut automaton = WildfireAutomaton::new(M, N, cells);
+    let mut automaton = ColorGradientAutomaton::new(M, N, true, cells);
     automaton.init_rand();
 
     while window.is_open() && !window.is_key_down(Key::Escape) {
