@@ -2,15 +2,18 @@ use std::vec::Vec;
 use std::hash::Hash;
 use std::collections::HashMap;
 use std::mem::swap;
-use rand::Rng;
+use rand::thread_rng;
+use rand::seq::SliceRandom;
 
 
 pub struct Automaton<T>
 where
-    T: Copy + Eq + Hash {
+    T: Copy + Eq + Hash
+{
     m: usize,
     n: usize,
     q: u32,
+    states: Vec<T>,
     torus: bool,
     next_state: Box<dyn Fn(&Self, usize, usize) -> T>,
     colors: HashMap<T, u32>,
@@ -21,18 +24,20 @@ where
 
 impl<T> Automaton<T>
 where
-    T: Copy + Eq + Hash {
+    T: Copy + Eq + Hash
+{
     pub fn new(
         m: usize,
         n: usize,
         q: u32,
+        states: Vec<T>,
         torus: bool,
         next_state: Box<dyn Fn(&Automaton<T>, usize, usize) -> T>,
         colors: HashMap<T, u32>,
         cells: Vec<Vec<T>>
     ) -> Self {
         Automaton {
-            m, n, q, torus, next_state, colors, cells: cells.clone(), temp: cells
+            m, n, q, states, torus, next_state, colors, cells: cells.clone(), temp: cells
         }
     }
 
@@ -83,15 +88,19 @@ where
         }
     }
 
-    // pub fn init_rand(&mut self, edge: bool) {
-    //    let (i_min, i_max) = if edge { (0, self.m )} else { (1, self.m - 1) };
-    //    let (j_min, j_max) = if edge { (0, self.n) } else { (1, self.n - 1) };
-    //    for i in i_min..i_max {
-    //        for j in j_min..j_max {
-    //            self.cells[i][j] = rand::thread_rng().gen_range(0..self.q);
-    //        }
-    //    }  
-    // }
+    pub fn init_rand(&mut self, edge: bool) {
+       let (i_min, i_max) = if edge { (0, self.m )} else { (1, self.m - 1) };
+       let (j_min, j_max) = if edge { (0, self.n) } else { (1, self.n - 1) };
+       let mut rng = thread_rng();
+       for i in i_min..i_max {
+           for j in j_min..j_max {
+               self.cells[i][j] = match self.states.choose(&mut rng) {
+                    Some(s) => *s,
+                    _ => panic!("Automaton has no possible state")
+               };
+           }
+       }
+    }
 
     pub fn next(&mut self) {
         let (i_min, i_max) = if self.torus {(0, self.m)} else {(1, self.m - 1)};
