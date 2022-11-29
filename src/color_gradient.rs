@@ -1,8 +1,9 @@
+use std::collections::HashMap;
 use crate::automaton::Automaton;
 
 
-fn next_state(a: &Automaton, i: usize, j: usize) -> u32 {
-    let mut neighbours = a.get_neighbours(i, j);
+fn next_state(a: &Automaton<u32>, i: usize, j: usize) -> u32 {
+    let mut neighbours = a.get_moore_neighbours(i, j);
     neighbours.push(a.get_cell(i, j));
     let sum = neighbours.iter().fold(0., |s, x| s + *x as f32);
     let x = (sum / 9.) as u32;
@@ -10,14 +11,24 @@ fn next_state(a: &Automaton, i: usize, j: usize) -> u32 {
 }
 
 
-pub fn new(m: usize, n: usize, torus: bool) -> Automaton {
-    Automaton::new(
+pub fn new(m: usize, n: usize, torus: bool) -> Automaton<u32> {
+    let colors: HashMap<u32, u32> = 
+        (0..360)
+            .map(|x| (x, x))
+            .map(|(x, y)| (x, hsv_to_hex((y as f32, 1.0, 1.0))))
+            .collect();
+    let states = colors
+            .keys()
+            .map(|x| *x)
+            .collect();
+    Automaton::<u32>::new(
         m,
         n,
         360,
+        states,
         torus,
         Box::new(next_state),
-        (0..360).map(|x| rgb_to_hex(hsv_to_rgb((x as f32, 1.0, 1.0)))).collect::<Vec<u32>>(),
+        colors,
         vec![vec![0; n]; m]
     )
 }
@@ -68,4 +79,9 @@ fn hsv_to_rgb(hsv: (f32, f32, f32)) -> (u8, u8, u8) {
 
 fn rgb_to_hex(rgb: (u8, u8, u8)) -> u32 {
     rgb.0 as u32 * 65536 + rgb.1 as u32 * 256 + rgb.2 as u32
+}
+
+
+fn hsv_to_hex(hsv: (f32, f32, f32)) -> u32 {
+    rgb_to_hex(hsv_to_rgb(hsv))
 }
