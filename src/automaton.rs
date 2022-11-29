@@ -37,19 +37,27 @@ impl Automaton {
     pub fn get_cell(&self, i: usize, j: usize) -> u32 {self.cells[i][j] }
     pub fn get_cell_color(&self, i: usize, j: usize) -> u32 { self.colors[self.cells[i][j] as usize] }
 
-    pub fn get_neighbours(&self, i: usize, j: usize) -> Vec<u32> {
+    pub fn get_von_neumann_neighbours(&self, i: usize, j: usize) -> Vec<u32> {
         let m = self.m;
         let n = self.n;
-        let neighbours = vec![
-            self.cells[(i-1) % m][(j-1) % n],
-            self.cells[(i-1) % m][j],
-            self.cells[(i-1) % m][(j+1) % n],
-            self.cells[i][(j-1) % n],
-            self.cells[i][(j+1) % n],
-            self.cells[(i+1) % m][(j-1) % n],
-            self.cells[(i+1) % m][j],
-            self.cells[(i+1) % m][(j+1) % n],
-        ];
+        vec![
+            self.cells[(i - 1) % m][j],
+            self.cells[i][(j + 1) % n],
+            self.cells[(i + 1) % m][j],
+            self.cells[i][(j - 1) % n]
+        ]
+    }
+
+    pub fn get_moore_neighbours(&self, i: usize, j: usize) -> Vec<u32> {
+        let m = self.m;
+        let n = self.n;
+        let mut neighbours = self.get_von_neumann_neighbours(i, j);
+        neighbours.append(&mut vec![
+            self.cells[(i - 1) % m][(j - 1) % n],
+            self.cells[(i - 1) % m][(j + 1) % n],
+            self.cells[(i + 1) % m][(j - 1) % n],
+            self.cells[(i + 1) % m][(j + 1) % n],
+        ]);
         neighbours
     }
 
