@@ -32,6 +32,7 @@ impl Automaton {
 
     // Getters
     pub fn get_size(&self) -> (usize, usize) { (self.m, self.n) }
+    pub fn get_q(&self) -> u32 { self.q }
     pub fn get_cells(&self) -> Vec<Vec<u32>> { self.cells.clone() }
     pub fn get_cell(&self, i: usize, j: usize) -> u32 {self.cells[i][j] }
     pub fn get_cell_color(&self, i: usize, j: usize) -> u32 { self.colors[self.cells[i][j] as usize] }
