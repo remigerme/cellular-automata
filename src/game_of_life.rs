@@ -1,8 +1,9 @@
+use std::collections::HashMap;
 use crate::automaton::Automaton;
 
 
-fn next_state(a: &Automaton, i: usize, j: usize) -> u32 {
-    let neighbours = a.get_neighbours(i, j);
+fn next_state(a: &Automaton<u8>, i: usize, j: usize) -> u8 {
+    let neighbours = a.get_moore_neighbours(i, j);
     let nb_neighbours_alive = neighbours.iter().fold(0, |a, b| a + b);
 
     match a.get_cell(i, j) {
@@ -13,14 +14,18 @@ fn next_state(a: &Automaton, i: usize, j: usize) -> u32 {
 }
 
 
-pub fn new(m: usize, n: usize, torus: bool) -> Automaton {
+pub fn new(m: usize, n: usize, torus: bool) -> Automaton<u8> {
     Automaton::new(
         m,
         n,
         2,
+        vec![0, 1],
         torus,
         Box::new(next_state),
-        vec![0xFFFFFF, 0],
+        HashMap::from([
+            (0, 0xFFFFFF),
+            (1, 0)
+        ]),
         vec![vec![0; n]; m]
     )
 }
