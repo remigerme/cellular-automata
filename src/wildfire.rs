@@ -1,30 +1,31 @@
+use std::collections::HashMap;
 use rand::Rng;
 use crate::automaton::Automaton;
 
 
-const ROCK: u32 = 0;
+const ROCK: u8 = 0;
 const GREY: u32 = 0xB0B0B0;
-const ASHES: u32 = 1;
+const ASHES: u8 = 1;
 const BLACK: u32 = 0x3B3737;
-const YOUNG: u32 = 2;
+const YOUNG: u8 = 2;
 const GREEN: u32 = 0x68E180;
-const OLD: u32 = 3;
+const OLD: u8 = 3;
 const DARK_GREEN: u32 = 0x24A609;
-const NEW_FIRE: u32 = 4;
+const NEW_FIRE: u8 = 4;
 const YELLOW: u32 = 0xF2F26E;
-const FIRE: u32 = 5;
+const FIRE: u8 = 5;
 const ORANGE: u32 = 0xE48F01;
-const FADING_FIRE: u32 = 6;
+const FADING_FIRE: u8 = 6;
 const RED: u32 = 0xBA2E0B;
 
 
-fn next_state(a: &Automaton, i: usize, j: usize) -> u32 {
+fn next_state(a: &Automaton<u8>, i: usize, j: usize) -> u8 {
     let mut rng = rand::thread_rng();
     match a.get_cell(i, j) {
         ROCK => ROCK,
         ASHES => if rng.gen::<f64>() < 0.001 {YOUNG} else {ASHES},
         YOUNG => {
-            let neighbours = a.get_neighbours(i, j);
+            let neighbours = a.get_moore_neighbours(i, j);
             if rng.gen::<f64>() < 0.01 && neighbours.contains(&NEW_FIRE) {
                 NEW_FIRE
             } else if rng.gen::<f64>() < 0.02 && neighbours.contains(&FIRE) {
@@ -38,7 +39,7 @@ fn next_state(a: &Automaton, i: usize, j: usize) -> u32 {
             }
         },
         OLD => {
-            let neighbours = a.get_neighbours(i, j);
+            let neighbours = a.get_moore_neighbours(i, j);
             if rng.gen::<f64>() < 0.1 && neighbours.contains(&NEW_FIRE) {
                 NEW_FIRE
             } else if rng.gen::<f64>() < 0.2 && neighbours.contains(&FIRE) {
@@ -59,14 +60,23 @@ fn next_state(a: &Automaton, i: usize, j: usize) -> u32 {
 }
 
 
-pub fn new(m: usize, n: usize, torus: bool) -> Automaton {
+pub fn new(m: usize, n: usize, torus: bool) -> Automaton<u8> {
     Automaton::new(
         m,
         n,
         7,
+        vec![ROCK, ASHES, YOUNG, OLD, NEW_FIRE, FIRE, FADING_FIRE],
         torus,
         Box::new(next_state),
-        vec![GREY, BLACK, GREEN, DARK_GREEN, YELLOW, ORANGE, RED],
+        HashMap::from([
+            (ROCK, GREY),
+            (ASHES, BLACK),
+            (YOUNG, GREEN),
+            (OLD, DARK_GREEN),
+            (NEW_FIRE, YELLOW),
+            (FIRE, ORANGE),
+            (FADING_FIRE, RED)
+        ]),
         vec![vec![ROCK; n]; m] 
     )
 }
