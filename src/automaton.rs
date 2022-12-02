@@ -1,6 +1,5 @@
 use std::vec::Vec;
 use std::hash::Hash;
-use std::collections::HashMap;
 use std::mem::swap;
 use rand::thread_rng;
 use rand::seq::SliceRandom;
@@ -16,7 +15,7 @@ where
     states: Vec<T>,
     torus: bool,
     next_state: Box<dyn Fn(&Self, usize, usize) -> T>,
-    colors: HashMap<T, u32>,
+    get_color: Box<dyn Fn(T) -> u32>,
     cells: Vec<Vec<T>>,
     temp: Vec<Vec<T>>
 }
@@ -33,11 +32,11 @@ where
         states: Vec<T>,
         torus: bool,
         next_state: Box<dyn Fn(&Automaton<T>, usize, usize) -> T>,
-        colors: HashMap<T, u32>,
+        get_color: Box<dyn Fn(T) -> u32>,
         cells: Vec<Vec<T>>
     ) -> Self {
         Automaton {
-            m, n, q, states, torus, next_state, colors, cells: cells.clone(), temp: cells
+            m, n, q, states, torus, next_state, get_color, cells: cells.clone(), temp: cells
         }
     }
 
@@ -46,12 +45,7 @@ where
     pub fn get_q(&self) -> u32 { self.q }
     pub fn get_cells(&self) -> Vec<Vec<T>> { self.cells.clone() }
     pub fn get_cell(&self, i: usize, j: usize) -> T {self.cells[i][j] }
-    pub fn get_cell_color(&self, i: usize, j: usize) -> u32 {
-        match self.colors.get(&self.cells[i][j]) {
-            Some(c) => *c,
-            _ => panic!("Cannot find any color for cell in ({}, {})", i, j)
-        }
-    }
+    pub fn get_cell_color(&self, i: usize, j: usize) -> u32 { (self.get_color)(self.cells[i][j]) }
 
     pub fn get_von_neumann_neighbours(&self, i: usize, j: usize) -> Vec<T> {
         let m = self.m;
