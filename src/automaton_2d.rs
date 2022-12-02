@@ -5,7 +5,7 @@ use rand::thread_rng;
 use rand::seq::SliceRandom;
 
 
-pub struct Automaton<T>
+pub struct Automaton2D<T>
 where
     T: Copy + Eq + Hash
 {
@@ -21,7 +21,7 @@ where
 }
 
 
-impl<T> Automaton<T>
+impl<T> Automaton2D<T>
 where
     T: Copy + Eq + Hash
 {
@@ -31,11 +31,11 @@ where
         q: u32,
         states: Vec<T>,
         torus: bool,
-        next_state: Box<dyn Fn(&Automaton<T>, usize, usize) -> T>,
+        next_state: Box<dyn Fn(&Automaton2D<T>, usize, usize) -> T>,
         get_color: Box<dyn Fn(T) -> u32>,
         cells: Vec<Vec<T>>
     ) -> Self {
-        Automaton {
+        Automaton2D {
             m, n, q, states, torus, next_state, get_color, cells: cells.clone(), temp: cells
         }
     }
@@ -90,7 +90,7 @@ where
            for j in j_min..j_max {
                self.cells[i][j] = match self.states.choose(&mut rng) {
                     Some(s) => *s,
-                    _ => panic!("Automaton has no possible state")
+                    _ => panic!("Automaton2D has no possible state")
                };
            }
        }
