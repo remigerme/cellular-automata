@@ -2,10 +2,12 @@ use std::vec::Vec;
 use minifb::{Key, Window, WindowOptions};
 
 
-mod automaton;
+mod automaton_1d;
+mod automaton_2d;
 mod game_of_life;
 mod color_gradient;
 mod wildfire;
+mod epidemic;
 
 
 fn main() {
@@ -28,8 +30,8 @@ fn main() {
     });
     window.limit_update_rate(Some(std::time::Duration::from_micros(2 * 16600)));
 
-    let mut automaton = wildfire::new(m, n, false);
-    automaton.init_state(1, false);
+    let mut automaton = epidemic::new(m, n, true);
+    automaton.init_rand(true);
 
     while window.is_open() && !window.is_key_down(Key::Escape) {
         automaton.next();

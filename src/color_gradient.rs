@@ -1,8 +1,7 @@
-use std::collections::HashMap;
-use crate::automaton::Automaton;
+use crate::automaton_2d::Automaton2D;
 
 
-fn next_state(a: &Automaton<u32>, i: usize, j: usize) -> u32 {
+fn next_state(a: &Automaton2D<u32>, i: usize, j: usize) -> u32 {
     let mut neighbours = a.get_moore_neighbours(i, j);
     neighbours.push(a.get_cell(i, j));
     let sum = neighbours.iter().fold(0., |s, x| s + *x as f32);
@@ -11,24 +10,17 @@ fn next_state(a: &Automaton<u32>, i: usize, j: usize) -> u32 {
 }
 
 
-pub fn new(m: usize, n: usize, torus: bool) -> Automaton<u32> {
-    let colors: HashMap<u32, u32> = 
-        (0..360)
-            .map(|x| (x, x))
-            .map(|(x, y)| (x, hsv_to_hex((y as f32, 1.0, 1.0))))
-            .collect();
-    let states = colors
-            .keys()
-            .map(|x| *x)
-            .collect();
-    Automaton::<u32>::new(
+pub fn new(m: usize, n: usize, torus: bool) -> Automaton2D<u32> {
+    let get_color = |s| hsv_to_hex((s as f32, 1.0, 1.0));
+    let states = (0..360).collect();
+    Automaton2D::<u32>::new(
         m,
         n,
         360,
         states,
         torus,
         Box::new(next_state),
-        colors,
+        Box::new(get_color),
         vec![vec![0; n]; m]
     )
 }

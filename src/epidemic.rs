@@ -1,6 +1,6 @@
 use rand::Rng;
 use probability::{distribution::Gaussian, prelude::Continuous};
-use crate::automaton::Automaton;
+use crate::automaton_2d::Automaton2D;
 
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
@@ -13,7 +13,7 @@ pub enum State {
 
 use self::State::*;
 
-fn next_state(a: &Automaton<State>, i: usize, j: usize) -> State {
+fn next_state(a: &Automaton2D<State>, i: usize, j: usize) -> State {
     let neighbours = a.get_von_neumann_neighbours(i, j);
     let nb_infected = neighbours
         .iter()
@@ -76,7 +76,7 @@ fn next_state(a: &Automaton<State>, i: usize, j: usize) -> State {
 }
 
 
-pub fn new(m: usize, n: usize, torus: bool) -> Automaton<State> {
+pub fn new(m: usize, n: usize, torus: bool) -> Automaton2D<State> {
     let states = vec![HEALTHY, INFECTED(0), RECOVERED, DEAD];
     let get_color = |s| match s {
         HEALTHY => 0xFFFFFF,
@@ -86,7 +86,7 @@ pub fn new(m: usize, n: usize, torus: bool) -> Automaton<State> {
     };
     let mut cells = vec![vec![HEALTHY; n]; m];
     cells[m / 2][n / 2] = INFECTED(0); // One infected
-    Automaton::new(
+    Automaton2D::new(
         m,
         n,
         4,

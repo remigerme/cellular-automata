@@ -1,6 +1,5 @@
-use std::collections::HashMap;
 use rand::Rng;
-use crate::automaton::Automaton;
+use crate::automaton_2d::Automaton2D;
 
 
 const ROCK: u8 = 0;
@@ -19,7 +18,7 @@ const FADING_FIRE: u8 = 6;
 const RED: u32 = 0xBA2E0B;
 
 
-fn next_state(a: &Automaton<u8>, i: usize, j: usize) -> u8 {
+fn next_state(a: &Automaton2D<u8>, i: usize, j: usize) -> u8 {
     let mut rng = rand::thread_rng();
     match a.get_cell(i, j) {
         ROCK => ROCK,
@@ -60,23 +59,24 @@ fn next_state(a: &Automaton<u8>, i: usize, j: usize) -> u8 {
 }
 
 
-pub fn new(m: usize, n: usize, torus: bool) -> Automaton<u8> {
-    Automaton::new(
+pub fn new(m: usize, n: usize, torus: bool) -> Automaton2D<u8> {
+    Automaton2D::new(
         m,
         n,
         7,
         vec![ROCK, ASHES, YOUNG, OLD, NEW_FIRE, FIRE, FADING_FIRE],
         torus,
         Box::new(next_state),
-        HashMap::from([
-            (ROCK, GREY),
-            (ASHES, BLACK),
-            (YOUNG, GREEN),
-            (OLD, DARK_GREEN),
-            (NEW_FIRE, YELLOW),
-            (FIRE, ORANGE),
-            (FADING_FIRE, RED)
-        ]),
+        Box::new(|s| match s {
+            ROCK => GREY,
+            ASHES => BLACK,
+            YOUNG => GREEN,
+            OLD => DARK_GREEN,
+            NEW_FIRE => YELLOW,
+            FIRE => ORANGE,
+            FADING_FIRE => RED,
+            _ => panic!("Unknown state")
+        }),
         vec![vec![ROCK; n]; m] 
     )
 }
