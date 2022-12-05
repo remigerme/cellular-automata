@@ -111,3 +111,19 @@ where
         swap(&mut self.cells, &mut self.temp);
     }
 }
+
+
+pub fn update_buffer<T>(buffer: &mut Vec<u32>, a: &Automaton2D<T>, width: usize, cell_size: usize)
+where
+    T: Copy + Eq + Hash
+{
+    for (index, cell) in buffer.iter_mut().enumerate() {
+        let x = index % width;
+        let y = index / width;
+
+        let i = y / cell_size;
+        let j = x / cell_size;
+
+        *cell = a.get_cell_color(i, j);
+    }
+}
