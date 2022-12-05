@@ -4,6 +4,7 @@ use minifb::{Key, Window, WindowOptions};
 
 mod automaton_1d;
 mod automaton_2d;
+mod elementary;
 mod game_of_life;
 mod color_gradient;
 mod wildfire;
@@ -11,9 +12,9 @@ mod epidemic;
 
 
 fn main() {
-    let m = 200;
-    let n = 300;
-    let cell_size = 4;
+    let m = 800;
+    let n = 1200;
+    let cell_size = 1;
     let width = n * cell_size;
     let height = m * cell_size;
 
@@ -28,23 +29,16 @@ fn main() {
     .unwrap_or_else(|e| {
         panic!("{}", e);
     });
-    window.limit_update_rate(Some(std::time::Duration::from_micros(2 * 16600)));
+    window.limit_update_rate(Some(std::time::Duration::from_micros(16600)));
 
-    let mut automaton = epidemic::new(m, n, true);
-    automaton.init_rand(true);
-
+    let mut automaton = elementary::new(n, &99, false);
+    let mut k = 0;
     while window.is_open() && !window.is_key_down(Key::Escape) {
-        automaton.next();
-
-        for (index, cell) in buffer.iter_mut().enumerate() {
-            let x = index / width;
-            let y = index % width;
-
-            let i = x / cell_size;
-            let j = y / cell_size;
-
-            *cell = automaton.get_cell_color(i, j);
-        }
+        automaton_1d::update_buffer(&mut buffer, &automaton, k, width, cell_size);
         window.update_with_buffer(&buffer, width, height).unwrap();
+        if k < m - 1 {
+            automaton.next();
+            k += 1;
+        }
     }
 }
