@@ -63,9 +63,9 @@ where
     }
 
     pub fn init_rand(&mut self, edge: bool) {
-       let (i_min, i_max) = if edge { (0, self.n )} else { (1, self.n - 1) };
-       let mut rng = thread_rng();
-       for i in i_min..i_max {
+        let (i_min, i_max) = if edge { (0, self.n )} else { (1, self.n - 1) };
+        let mut rng = thread_rng();
+        for i in i_min..i_max {
             self.cells[i] = match self.states.choose(&mut rng) {
                 Some(s) => *s,
                 _ => panic!("Automaton has no possible state")
@@ -84,4 +84,20 @@ where
     fn swap_buffer(&mut self) {
         swap(&mut self.cells, &mut self.temp);
     }
+}
+
+
+pub fn update_buffer<T>(buffer: &mut Vec<u32>, a: &Automaton1D<T>, k: usize, width: usize, cell_size: usize)
+where
+    T: Copy + Eq + Hash
+{
+    let i_min = k * width * cell_size;
+    let i_max = (k + 1) * width * cell_size;
+    // looks slower than to iter over the whole mut buffer
+    // as done for automaton 2D
+    // but don't know why
+    for i in i_min..i_max {
+        buffer[i] = a.get_cell_color((i % width) / cell_size);
+    }
+
 }
