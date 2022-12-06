@@ -8,6 +8,7 @@ type HSV = [f64; 3];
 pub fn hsv_to_rgb(hsv: HSV) -> RGB {
     // according to wikipedia's article
     let [h, s, v] = hsv;
+    let h = h % 360.0;
     
     let c = v * s;
     let h_ = h / 60.;
