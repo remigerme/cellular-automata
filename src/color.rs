@@ -3,18 +3,6 @@ type RGB = [u8; 3];
 type HSV = [f64; 3];
 
 
-// Utils
-fn float_modulo(x: f64, y: f64) -> f64 {
-    // we must have y > 0
-    let mut x_ = x;
-    let eps = if x_ >= 0. {-1.} else {1.};
-    while x_ < 0. || x_ > y {
-        x_ += eps * y;
-    }
-    x_
-}
-
-
 // Converters
 // To RGB
 pub fn hsv_to_rgb(hsv: HSV) -> RGB {
@@ -23,7 +11,7 @@ pub fn hsv_to_rgb(hsv: HSV) -> RGB {
     
     let c = v * s;
     let h_ = h / 60.;
-    let x = c * (1. - (float_modulo(h_, 2.) - 1.).abs());
+    let x = c * (1. - ((h_ % 2.0) - 1.).abs());
 
     let (r, g, b) = {
         let (r1, g1, b1) = {
