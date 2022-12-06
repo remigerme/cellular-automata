@@ -1,8 +1,10 @@
 use std::vec::Vec;
 use std::hash::Hash;
 use std::mem::swap;
+use image::{ImageBuffer, RgbImage, Rgb};
 use rand::thread_rng;
 use rand::seq::SliceRandom;
+use std::io::{stdout, Write};
 
 
 pub struct Automaton1D<T>
@@ -87,6 +89,34 @@ where
 }
 
 
+pub fn generate_image<T>(width: usize, height: usize, cell_size: usize, a: &mut Automaton1D<T>) -> RgbImage
+where
+    T: Copy + Eq + Hash
+{
+    let mut img = ImageBuffer::new(width as u32, height as u32);
+    let m = height / cell_size;
+    let mut per_one = 0.0;
+    print!("Progression (# = 10%) : ");
+    for k in 0..m {
+        if (k as f64) / (m as f64) > per_one {
+            per_one += 0.1;
+            print!("#");
+            stdout().flush().unwrap();
+        }
+        for y in (k * cell_size)..((k + 1) * cell_size) {
+            for x in 0..width {
+                let hex_color = a.get_cell_color(x);
+                let pixel = Rgb(hex_to_rgb(hex_color));
+                img.put_pixel(x as u32, y as u32, pixel)
+            }
+        }
+        a.next();
+    }
+    println!("");
+    img 
+} 
+
+
 pub fn update_buffer<T>(buffer: &mut Vec<u32>, a: &Automaton1D<T>, k: usize, width: usize, cell_size: usize)
 where
     T: Copy + Eq + Hash
@@ -100,4 +130,14 @@ where
         buffer[i] = a.get_cell_color((i % width) / cell_size);
     }
 
+}
+
+
+// TODO : move to another file
+fn hex_to_rgb(hex: u32) -> [u8; 3] {
+    [
+        (hex / 65536).try_into().unwrap(),
+        ((hex % 65536) / 256).try_into().unwrap(),
+        (hex % 256).try_into().unwrap()
+    ]
 }
