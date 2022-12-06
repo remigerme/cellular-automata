@@ -5,6 +5,7 @@ use image::{ImageBuffer, RgbImage, Rgb};
 use rand::thread_rng;
 use rand::seq::SliceRandom;
 use std::io::{stdout, Write};
+use crate::color::hex_to_rgb;
 
 
 pub struct Automaton1D<T>
@@ -130,14 +131,4 @@ where
         buffer[i] = a.get_cell_color((i % width) / cell_size);
     }
 
-}
-
-
-// TODO : move to another file
-fn hex_to_rgb(hex: u32) -> [u8; 3] {
-    [
-        (hex / 65536).try_into().unwrap(),
-        ((hex % 65536) / 256).try_into().unwrap(),
-        (hex % 256).try_into().unwrap()
-    ]
 }
