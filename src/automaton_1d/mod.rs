@@ -1,3 +1,5 @@
+pub mod elementary;
+
 use std::vec::Vec;
 use std::hash::Hash;
 use std::mem::swap;

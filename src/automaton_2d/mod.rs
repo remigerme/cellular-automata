@@ -1,3 +1,8 @@
+pub mod game_of_life;
+pub mod wildfire;
+pub mod color_gradient;
+pub mod epidemic;
+
 use std::vec::Vec;
 use std::hash::Hash;
 use std::mem::swap;
