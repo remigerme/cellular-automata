@@ -1,4 +1,5 @@
 pub mod elementary;
+pub mod color;
 
 use std::vec::Vec;
 use std::hash::Hash;
@@ -108,7 +109,7 @@ where
         }
         for y in (k * cell_size)..((k + 1) * cell_size) {
             for x in 0..width {
-                let hex_color = a.get_cell_color(x);
+                let hex_color = a.get_cell_color(x / cell_size);
                 let pixel = Rgb(hex_to_rgb(hex_color));
                 img.put_pixel(x as u32, y as u32, pixel)
             }
@@ -132,5 +133,4 @@ where
     for i in i_min..i_max {
         buffer[i] = a.get_cell_color((i % width) / cell_size);
     }
-
 }
