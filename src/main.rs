@@ -3,18 +3,37 @@ mod automaton_2d;
 mod color;
 
 use automaton_1d::{generate_image, elementary};
-use minifb::{Key, Window, WindowOptions};
+// use minifb::{Key, Window, WindowOptions};
 
 fn main() {
-    let m = 20000;
-    let n = 1000;
-    let cell_size = 1;
-    let width = n * cell_size;
-    let height = m * cell_size;
+    const cell_size: usize = 1;
+    const rules: [u8; 5] = [22, 30, 45, 73, 99];
 
-    let mut a = elementary::new(n, &22, false);
-    let img = generate_image(width, height, cell_size, &mut a);
-    img.save("rule_22.png").unwrap();
+    for i in 0..rules.len() {
+        for torus in [false, true] {
+            for (m, n) in [(400, 400),
+                                         (400, 600),
+                                         (600, 400),
+                                         (4000, 4000),
+                                         (4000, 6000),
+                                         (6000, 4000)] {
+                let width = n * cell_size;
+                let height = m * cell_size;
+                let mut a = elementary::new(n, &rules[i], torus);
+                let img = generate_image(width, height, cell_size, &mut a);
+                img.save(format!(
+                    "examples/rule{}/rule{}_w{}_h{}_cs{}_torus{}.png",
+                    &rules[i],
+                    &rules[i],
+                    width,
+                    height,
+                    cell_size,
+                    torus
+                )).unwrap();
+            }
+        }
+    }
+
     // let mut buffer: Vec<u32> = vec![0; width * height];
     // 
     // let mut window = Window::new(
