@@ -1,11 +1,11 @@
 use crate::automaton_1d::Automaton1D;
 
 
-pub fn new(n: usize, rule: &'static u8, torus: bool) -> Automaton1D<bool> {
-    let next_state = |a: &Automaton1D<bool>, i: usize| -> bool {
+pub fn new(n: usize, rule: u8, torus: bool) -> Automaton1D<bool> {
+    let next_state = move |a: &Automaton1D<bool>, i: usize| -> bool {
         let neighbours = a.get_neighbours(i);
         let config = 4 * neighbours[0] as u32 + 2 * neighbours[1] as u32 + neighbours[2] as u32;
-        ((*rule >> config) & 0b1) != 0
+        ((rule >> config) & 0b1) != 0
     };
     let mut cells = vec![false; n];
     cells[n / 2] = true;
